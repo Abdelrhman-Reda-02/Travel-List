@@ -1,17 +1,19 @@
 import { useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: true },
-  { id: 3, description: "Charger", quantity: 1, packed: true },
-];
+//
 
 export default function App() {
+  const [items, setItems] = useState([]);
+
+  function handleAddItems(item) {
+    setItems((items) => [...items, item]);
+  }
+
   return (
     <div className="app">
       <Logo />
-      <Form />
-      <PackingList />
+      <Form onAddItems={handleAddItems} />
+      <PackingList items={items} />
       <Stats />
     </div>
   );
@@ -20,19 +22,22 @@ export default function App() {
 function Logo() {
   return <h1> 🌴Far Away💼</h1>;
 }
-function Form() {
+
+function Form({ onAddItems }) {
   const [description, setDescription] = useState("");
-  const [qunatity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
+
   function handleSubmit(e) {
     e.preventDefault();
     if (!description) return;
     const newItem = {
       description,
-      qunatity,
+      quantity,
       packed: false,
       id: Date.now(),
     };
-    console.log(newItem);
+    onAddItems(newItem);
+    // console.log(newItem);
     setDescription("");
     setQuantity(1);
   }
@@ -40,7 +45,7 @@ function Form() {
     <form className="add-form" onSubmit={handleSubmit}>
       <h3>What do you need for your 😍 trip?</h3>
       <select
-        value={qunatity}
+        value={quantity}
         onChange={(e) => {
           setQuantity(Number(e.target.value));
         }}>
@@ -62,11 +67,11 @@ function Form() {
     </form>
   );
 }
-function PackingList() {
+function PackingList({ items }) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
+        {items.map((item) => (
           <Item item={item} key={item.id} />
         ))}
       </ul>
